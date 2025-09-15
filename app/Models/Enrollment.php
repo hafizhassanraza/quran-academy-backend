@@ -11,11 +11,33 @@ class Enrollment extends Model
         'course_id',
         'teacher_id',
         'enrollment_date',
+        'starting_date',
+        'ending_date',
+        'slots',
         'status',
         'grade',
         'semester',
         'year',
         'other',
-
     ];
+
+    protected $casts = [
+        'slots' => 'array',
+    ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
 }

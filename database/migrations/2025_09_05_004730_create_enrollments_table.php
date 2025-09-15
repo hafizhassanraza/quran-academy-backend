@@ -19,6 +19,12 @@ return new class extends Migration
             $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
 
             $table->date('enrollment_date');
+            $table->date('starting_date');
+            $table->date('ending_date')->nullable();
+            
+            $table->json('slots'); // Store slots as simple string array
+
+
             $table->string('grade')->nullable();
             $table->string('semester')->nullable();
             $table->year('year')->nullable();

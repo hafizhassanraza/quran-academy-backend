@@ -62,7 +62,13 @@ class EnrollmentController extends Controller
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:teachers,id',
+
             'enrollment_date' => 'required|date',
+            'starting_date' => 'required|date',
+            'slots' => 'required|array|min:1',
+            'slots.*' => 'required|string',
+
+
             'grade' => 'nullable|string|max:10',
             'semester' => 'required|string|max:20',
             'year' => 'required|integer|min:2000|max:2100',
@@ -90,6 +96,14 @@ class EnrollmentController extends Controller
             'teacher_id.required' => 'The teacher ID is required.',
             'enrollment_date.required' => 'The enrollment date is required.',
             'enrollment_date.date' => 'The enrollment date must be a valid date.',
+            'startng_date.required' => 'The starting date is required.',
+            'startng_date.date' => 'The starting date must be a valid date.',
+            'slots.required' => 'At least one slot is required.',
+            'slots.array' => 'The slots must be an array.',
+            'slots.min' => 'At least one slot is required.',
+            'slots.*.required' => 'Each slot is required.',
+            'slots.*.string' => 'Each slot must be a string.',
+
             'grade.string' => 'The grade must be a string.',
             'grade.max' => 'The grade may not be greater than 10 characters.',
             'semester.required' => 'The semester is required.',
@@ -120,6 +134,28 @@ class EnrollmentController extends Controller
       "year": 2023,
       "status": "active",
       "other": "Additional notes"
+    }
+    */
+
+
+    /*
+    Postman request sample (JSON):
+
+    {
+        "student_id": 1,
+        "course_id": 1,
+        "teacher_id": 1,
+        "enrollment_date": "2023-01-01",
+        "startng_date": "2023-01-10",
+        "slots": [
+            "MON1",
+            "WED5",
+            "FRI10"
+        ],
+        "grade": "A",
+        "semester": "Spring",
+        "year": 2023,
+        "other": "Additional notes"
     }
     */
 

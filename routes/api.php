@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Teacher\TeacherController;
 use App\Http\Controllers\Api\Admin\ChapterController;
 use App\Http\Controllers\Api\Admin\CourseController;
 use App\Http\Controllers\Api\Admin\SlotController;
+use App\Http\Controllers\Api\Admin\TimeTableController;
 use App\Http\Controllers\Api\Student\EnrollmentController;
 
 
@@ -26,4 +27,8 @@ Route::apiResource('slots', SlotController::class);
 
 
 
-
+Route::prefix('timetable')->group(function () {
+    Route::get('teacher/{teacherId}', [TimeTableController::class, 'getTimeTableByTeacher']);
+    Route::get('slot/{slotNumber}', [TimeTableController::class, 'getTimeTableBySlotNumber']);
+    Route::get('student/{studentId}', [TimeTableController::class, 'getTimeTableByStudent']);
+});
