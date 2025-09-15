@@ -12,9 +12,6 @@ use App\Http\Controllers\Api\Student\EnrollmentController;
 
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 
 
@@ -32,3 +29,6 @@ Route::prefix('timetable')->group(function () {
     Route::get('slot/{slotNumber}', [TimeTableController::class, 'getTimeTableBySlotNumber']);
     Route::get('student/{studentId}', [TimeTableController::class, 'getTimeTableByStudent']);
 });
+
+Route::post('student/login', [StudentController::class, 'studentLogin']);
+Route::post('teacher/login', [TeacherController::class, 'teacherLogin']);

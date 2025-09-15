@@ -70,6 +70,53 @@ class StudentController extends Controller
     }
 
 
+
+
+
+    public function studentLogin(Request $request)
+    {
+        $validator = $this->validateStudentLogin($request);
+        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+
+
+        $student = Student::where('registration_no', $request->registration_no)->first();
+
+        if (!$student || $request->password !== $student->password) {
+            throw ValidationException::withMessages([
+            'registration_no' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+        return response()->json([
+            'student' => $student,
+        ]);
+    }
+
+
+
+
+    protected function validateStudentLogin(Request $request)
+    {
+        $rules = [
+            'registration_no' => 'required|string',
+            'password' => 'required|string',
+        ];
+        $messages = [
+            'registration_no.required' => 'Registration number is required.',
+            'registration_no.string' => 'Registration number must be a string.',
+            'password.required' => 'Password is required.',
+            'password.string' => 'Password must be a string.',
+        ];
+        return Validator::make($request->all(), $rules, $messages);
+    }
+
+
+
+
+
+
+
+
+
     protected function validateStudent(Request $request)
     {
         return Validator::make($request->all(), [

@@ -67,6 +67,48 @@ class TeacherController extends Controller
         ]);
     }
 
+
+
+
+            public function teacherLogin(Request $request)
+    {
+        $validator = $this->validateTeacherLogin($request);
+        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+        $teacher = Teacher::where('employee_id', $request->employee_id)->first();
+        if (!$teacher || $request->password !== $teacher->password) {
+            throw ValidationException::withMessages([
+            'employee_id' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+        return response()->json([
+            'teacher' => $teacher,
+        ]);
+    }
+
+    protected function validateTeacherLogin(Request $request)
+    {
+        $rules = [
+            'employee_id' => 'required|string',
+            'password' => 'required|string',
+        ];
+        $messages = [
+            'employee_id.required' => 'Employee ID is required.',
+            'employee_id.string' => 'Employee ID must be a string.',
+            'password.required' => 'Password is required.',
+            'password.string' => 'Password must be a string.',
+        ];
+        return Validator::make($request->all(), $rules, $messages);
+    }
+
+
+
+
+
+
+
+
+
+
     protected function validateTeacher(Request $request, $id = null)
     {
         $uniqueEmployeeId = 'unique:teachers,employee_id';
