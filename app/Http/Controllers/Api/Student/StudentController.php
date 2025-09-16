@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
+
 //Models
 use App\Models\Student;
 use App\Models\Enrollment;
@@ -27,6 +28,14 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+
+
+
+
+
+
+        
+
         $validator = $this->validateStudent($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
         $student = Student::create($request->all());
@@ -80,12 +89,9 @@ class StudentController extends Controller
 
 
         $student = Student::where('registration_no', $request->registration_no)->first();
+        if (!$student || $request->password !== $student->password) return response()->json(['errors' => 'The provided credentials are incorrect.'], 422);
 
-        if (!$student || $request->password !== $student->password) {
-            throw ValidationException::withMessages([
-            'registration_no' => ['The provided credentials are incorrect.'],
-            ]);
-        }
+        
         return response()->json([
             'student' => $student,
         ]);
@@ -108,14 +114,6 @@ class StudentController extends Controller
         ];
         return Validator::make($request->all(), $rules, $messages);
     }
-
-
-
-
-
-
-
-
 
     protected function validateStudent(Request $request)
     {

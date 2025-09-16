@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Api\Teacher;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+
 
 //Models
 use App\Models\Student;
@@ -70,20 +72,27 @@ class TeacherController extends Controller
 
 
 
-            public function teacherLogin(Request $request)
+    public function teacherLogin(Request $request)
     {
         $validator = $this->validateTeacherLogin($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
         $teacher = Teacher::where('employee_id', $request->employee_id)->first();
-        if (!$teacher || $request->password !== $teacher->password) {
-            throw ValidationException::withMessages([
-            'employee_id' => ['The provided credentials are incorrect.'],
-            ]);
-        }
+        if (!$teacher || $request->password !== $teacher->password) return response()->json(['errors' => 'The provided credentials are incorrect.'], 422);
+
         return response()->json([
             'teacher' => $teacher,
         ]);
     }
+
+
+
+
+
+
+
+
+
+
 
     protected function validateTeacherLogin(Request $request)
     {
@@ -99,15 +108,6 @@ class TeacherController extends Controller
         ];
         return Validator::make($request->all(), $rules, $messages);
     }
-
-
-
-
-
-
-
-
-
 
     protected function validateTeacher(Request $request, $id = null)
     {
