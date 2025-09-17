@@ -9,11 +9,9 @@ class Slot extends Model
     
     protected $fillable = [
 
-        'teacher_id',
-        'student_id',
-        'course_id',
+        'enrollment_id',
         'chapter_id',
-        'slot_number',
+        'slot_code',
         'slot_date',
         'reschedule_date',
         'start_time',
@@ -21,6 +19,29 @@ class Slot extends Model
         'status',
         'other',
 
-
     ];
+
+    public function enrollment()
+    {
+        return $this->belongsTo(Enrollment::class);
+    }
+
+    // Scope to filter rescheduled slots
+    // Usage: Slot::rescheduled()->get();
+    public function scopeRescheduled($query)
+    {
+        return $query->where('status', 'rescheduled');
+    }
+
+    public function scopeSlotOfTeacher($query, $teacherId)
+    {
+        return $query->whereHas('enrollment', function ($q) use ($teacherId) {
+            $q->where('teacher_id', $teacherId);
+        });
+    }
+
+
+
+
+
 }

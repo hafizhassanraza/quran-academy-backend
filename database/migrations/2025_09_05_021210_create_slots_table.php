@@ -14,19 +14,15 @@ return new class extends Migration
         Schema::create('slots', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
-            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
+            $table->foreignId('enrollment_id')->constrained('enrollments')->onDelete('cascade');
             $table->foreignId('chapter_id')->constrained('chapters')->onDelete('cascade');
-            $table->integer('slot_number');
+            $table->string('slot_code');
             $table->date('slot_date');
             $table->date('reschedule_date')->nullable();
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->string('other')->nullable();
             $table->enum('status', ['scheduled', 'started', 'completed', 'missed', 'rescheduled'])->default('scheduled');
-
-
 
             $table->timestamps();
         });

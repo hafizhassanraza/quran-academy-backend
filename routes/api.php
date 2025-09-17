@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\CourseController;
 use App\Http\Controllers\Api\Admin\SlotController;
 use App\Http\Controllers\Api\Admin\TimeTableController;
 use App\Http\Controllers\Api\Student\EnrollmentController;
+use App\Http\Controllers\Api\Teacher\AccountController;
 
 
 
@@ -21,6 +22,7 @@ Route::apiResource('chapters', ChapterController::class);
 Route::apiResource('courses', CourseController::class);
 Route::apiResource('enrollments', EnrollmentController::class);
 Route::apiResource('slots', SlotController::class);
+Route::apiResource('accounts', AccountController::class);
 
 
 

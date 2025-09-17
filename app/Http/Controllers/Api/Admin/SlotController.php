@@ -30,6 +30,14 @@ class SlotController extends Controller
         $validator = $this->validateSlot($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
+
+        if ($request->input('status') === 'rescheduled') {
+            if($this->isSlotConflict($request->teacher_id, [$request->slot_code])) {
+                return response()->json(['error' => 'The rescheduled date conflicts with this teacher\'s existing schedule.'], 422);
+            }
+        }
+
+
         $slot = Slot::create($request->all());
 
         return response()->json([
@@ -58,31 +66,61 @@ class SlotController extends Controller
         ]);
     }
 
+
+
+
+    protected function isSlotConflict($teacher_id, $newSlots)
+    {
+
+        $existingEnrollments = Enrollment::where('teacher_id', $teacher_id)->get();
+        $rescheduledSlots = Slot::rescheduled()->slotOfTeacher($teacher_id)->pluck('slot_code')->toArray();
+
+        $allExistingSlots = [];
+        foreach ($existingEnrollments as $enrollment) {
+            $existingSlots = $enrollment->slots ?? [];
+            if (is_array($existingSlots)) {
+                $allExistingSlots = array_merge($allExistingSlots, $existingSlots);
+            }
+        }
+        $allExistingSlots = array_merge($allExistingSlots, $rescheduledSlots);
+
+        if (array_intersect($allExistingSlots, $newSlots)) {
+            return true; // Conflict found
+        }
+
+      
+        foreach ($existingEnrollments as $enrollment) {
+            $existingSlots = $enrollment->slots;
+            if (array_intersect($existingSlots, $newSlots)) {
+                return true; // Conflict found
+            }
+        }
+        return false; // No conflict
+    }
+
+
+
     protected function validateSlot(Request $request, $id = null)
     {
         $rules = [
+            'enrollment_id'   => 'required|exists:enrollments,id',
             'teacher_id'      => 'required|exists:teachers,id',
-            'student_id'      => 'required|exists:students,id',
-            'course_id'       => 'required|exists:courses,id',
             'chapter_id'      => 'nullable|exists:chapters,id',
-            'slot_number'     => 'required|integer|min:1',
+            'slot_code'       => 'required|string|max:10',
             'slot_date'       => 'required|date',
             'reschedule_date' => 'nullable|date|after_or_equal:slot_date',
-            'start_time'      => 'required|date_format:H:i',
-            'end_time'        => 'required|date_format:H:i|after:start_time',
+            'start_time'      => 'nullable|date_format:H:i',
+            'end_time'        => 'nullable|date_format:H:i|after:start_time',
             'other'           => 'nullable|string|max:255',
+            'status'          => 'in:scheduled,started,completed,missed,rescheduled',
         ];
         $messages = [
-            'teacher_id.required'      => 'The teacher is required.',
+            'enrollment_id.required'   => 'The enrollment is required.',
+            'enrollment_id.exists'     => 'The selected enrollment does not exist.',
             'teacher_id.exists'        => 'The selected teacher does not exist.',
-            'student_id.required'      => 'The student is required.',
-            'student_id.exists'        => 'The selected student does not exist.',
-            'course_id.required'       => 'The course is required.',
-            'course_id.exists'         => 'The selected course does not exist.',
+            'chapter_id.required'      => 'The chapter is required.',
             'chapter_id.exists'        => 'The selected chapter does not exist.',
-            'slot_number.required'     => 'The slot number is required.',
-            'slot_number.integer'      => 'The slot number must be an integer.',
-            'slot_number.min'          => 'The slot number must be at least 1.',
+            'slot_code.required'     => 'The slot code is required.',
             'slot_date.required'       => 'The slot date is required.',
             'slot_date.date'           => 'The slot date must be a valid date.',
             'reschedule_date.date'     => 'The reschedule date must be a valid date.',
@@ -92,9 +130,10 @@ class SlotController extends Controller
             'end_time.required'        => 'The end time is required.',
             'end_time.date_format'     => 'The end time must be in the format H:i.',
             'end_time.after'           => 'The end time must be after the start time.',
-            
             'other.string'             => 'The other field must be a string.',
             'other.max'                => 'The other field may not be greater than 255 characters.',
+            'status.required'          => 'The status is required.',
+            'status.in'                => 'The selected status is invalid. Allowed values: scheduled, started, completed, missed, rescheduled.',
         ];
 
         return Validator::make($request->all(), $rules, $messages);

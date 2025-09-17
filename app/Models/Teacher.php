@@ -27,13 +27,11 @@ class Teacher extends Model
         'time_zone',
         'other',
         'status',
+        'balance',
     ];
 
 
-    public function slots()
-    {
-        return $this->hasMany(Slot::class);
-    }
+ 
 
     public function courses()
     {
@@ -43,6 +41,19 @@ class Teacher extends Model
     {
         return $this->hasMany(Enrollment::class);
     }
+
+    public function completeSlots()
+    {
+        return $this->hasManyThrough(
+            Slot::class,
+            Enrollment::class,
+            'teacher_id', // Foreign key on enrollments table...
+            'enrollment_id', // Foreign key on slots table...
+            'id', // Local key on teachers table...
+            'id'  // Local key on enrollments table...
+        )->where('slots.status', 'completed');
+    }
+    
     
 
 }

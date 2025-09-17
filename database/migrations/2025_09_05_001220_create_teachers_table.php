@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
 
+            $table->integer('balance')->default(0);
             $table->string('employee_id')->unique();
             $table->string('photo')->nullable();
             $table->string('full_name');

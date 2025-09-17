@@ -76,7 +76,7 @@ class EnrollmentController extends Controller
     }
 
 
-    protected function isSlotConflict($teacher_id, $newSlots)
+    /* protected function isSlotConflict($teacher_id, $newSlots)
     {
         $existingEnrollments = Enrollment::where('teacher_id', $teacher_id)->get();
 
@@ -87,7 +87,41 @@ class EnrollmentController extends Controller
             }
         }
         return false; // No conflict
+    } */
+
+
+
+    protected function isSlotConflict($teacher_id, $newSlots)
+    {
+
+        $existingEnrollments = Enrollment::where('teacher_id', $teacher_id)->get();
+        $rescheduledSlots = Slot::rescheduled()->slotOfTeacher($teacher_id)->pluck('slot_code')->toArray();
+
+        $allExistingSlots = [];
+        foreach ($existingEnrollments as $enrollment) {
+            $existingSlots = $enrollment->slots ?? [];
+            if (is_array($existingSlots)) {
+                $allExistingSlots = array_merge($allExistingSlots, $existingSlots);
+            }
+        }
+        $allExistingSlots = array_merge($allExistingSlots, $rescheduledSlots);
+
+        if (array_intersect($allExistingSlots, $newSlots)) {
+            return true; // Conflict found
+        }
+
+      
+        foreach ($existingEnrollments as $enrollment) {
+            $existingSlots = $enrollment->slots;
+            if (array_intersect($existingSlots, $newSlots)) {
+                return true; // Conflict found
+            }
+        }
+        return false; // No conflict
     }
+
+
+
 
     protected function validateEnrollment(Request $request, $id = null)
     {

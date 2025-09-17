@@ -39,6 +39,15 @@ class Enrollment extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function slots()
+    {
+        return $this->hasMany(Slot::class);
+    }
+
+    public function rescheduledSlot()
+    {
+        return $this->hasOne(Slot::class)->where('status', 'rescheduled');
+    }
    
 
 }
