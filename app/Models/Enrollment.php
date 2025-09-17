@@ -16,7 +16,6 @@ class Enrollment extends Model
         'slots',
         'status',
         'grade',
-        'semester',
         'year',
         'other',
     ];
@@ -39,5 +38,7 @@ class Enrollment extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+   
 
 }

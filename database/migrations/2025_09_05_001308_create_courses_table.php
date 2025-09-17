@@ -18,9 +18,6 @@ return new class extends Migration
             $table->string('course_code')->unique();
             $table->string('course_name');
             $table->text('description')->nullable();
-            $table->integer('credits')->default(0);
-            $table->string('department');
-            $table->string('schedule')->nullable();
             $table->integer('enrollment_count')->default(0);
             $table->string('other')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');

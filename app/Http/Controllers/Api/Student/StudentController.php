@@ -28,16 +28,9 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-
-
-
-
-
-
-        
-
         $validator = $this->validateStudent($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+        $request->merge(['registration_no' => $this->getNextRegistrationNo()]);
         $student = Student::create($request->all());
 
         return response()->json([
@@ -118,28 +111,27 @@ class StudentController extends Controller
     protected function validateStudent(Request $request)
     {
         return Validator::make($request->all(), [
-            'registration_no'   => 'required|string|max:50|unique:students,registration_no',
+            //'registration_no'   => 'required|string|max:50|unique:students,registration_no',
             'photo'             => 'nullable|string|max:255',
             'full_name'         => 'required|string|max:255',
             'father_name'       => 'required|string|max:255',
             'gender'            => 'required|in:male,female,other',
             'age'               => 'required|integer|min:1|max:120',
-            'email'             => 'required|email|unique:students,email',
+            'email'             => 'required|unique:students,email|string|max:255',
             'phone'             => 'required|string|max:20',
             'alternate_phone'   => 'nullable|string|max:20',
             'address'           => 'required|string|max:255',
             'city'              => 'required|string|max:100',
             'country'           => 'required|string|max:100',
             'enrollment_date'   => 'required|date',
-            'username'          => 'required|string|max:50|unique:students,username',
+            //'username'          => 'required|string|max:50|unique:students,username',
             'password'          => 'required|string|min:6|max:255',
-            'last_login'        => 'nullable|date',
             'national_id'       => 'nullable|string|max:50',
             'time_zone'         => 'nullable|string|max:100',
             'other'             => 'nullable|string|max:255',
         ], [
-            'registration_no.required' => 'Registration number is required.',
-            'registration_no.unique' => 'Registration number must be unique.',
+            //'registration_no.required' => 'Registration number is required.',
+            //'registration_no.unique' => 'Registration number must be unique.',
             'full_name.required' => 'Full name is required.',
             'father_name.required' => 'Father name is required.',
             'gender.required' => 'Gender is required.',
@@ -151,10 +143,20 @@ class StudentController extends Controller
             'city.required' => 'City is required.',
             'country.required' => 'Country is required.',
             'enrollment_date.required' => 'Enrollment date is required.',
-            'username.required' => 'Username is required.',
-            'username.unique' => 'Username must be unique.',
+            //'username.required' => 'Username is required.',
+            //'username.unique' => 'Username must be unique.',
             'password.required' => 'Password is required.',
         ]);
+    }
+
+    protected function getNextRegistrationNo()
+    {
+        $lastStudent = Student::orderBy('id', 'desc')->first();
+        $nextRegNumber = 1001;
+        if ($lastStudent && preg_match('/^QES(\d+)$/', $lastStudent->registration_no, $matches)) {
+            $nextRegNumber = (int)$matches[1] + 1;
+        }
+        return 'QES' . $nextRegNumber;
     }
 
 

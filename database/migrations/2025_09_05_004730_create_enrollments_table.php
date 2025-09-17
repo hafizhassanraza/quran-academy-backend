@@ -26,7 +26,6 @@ return new class extends Migration
 
 
             $table->string('grade')->nullable();
-            $table->string('semester')->nullable();
             $table->year('year')->nullable();
             $table->string('other')->nullable();
             $table->enum('status', ['enrolled', 'completed', 'dropped'])->default('enrolled');

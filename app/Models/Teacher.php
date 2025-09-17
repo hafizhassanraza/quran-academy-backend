@@ -20,7 +20,7 @@ class Teacher extends Model
         'city',
         'country',
         'hire_date',
-        'username',
+        //'username',
         'password',
         'last_login',
         'national_id',

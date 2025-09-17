@@ -22,7 +22,7 @@ class Student extends Model
         'city',
         'country',
         'enrollment_date',
-        'username',
+        //'username',
         'password',
         'last_login',
         'national_id',
@@ -30,6 +30,7 @@ class Student extends Model
         'other',
         'status',
     ];
+
 
     public function enrollments()
     {

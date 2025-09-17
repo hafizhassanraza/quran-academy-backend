@@ -19,7 +19,23 @@ class EnrollmentController extends Controller
 {
     public function index()
     {
-        $enrollments = Enrollment::all();
+        $enrollments = Enrollment::with(['student:id,full_name,registration_no', 'course:id,course_name,course_code', 'teacher:id,full_name,employee_id'])
+            ->get()
+            ->map(function ($enrollment) {
+            $extra_info = [
+                'student_name'    => $enrollment->student->full_name ?? null,
+                'student_reg_num' => $enrollment->student->registration_no ?? null,
+                'teacher_name'    => $enrollment->teacher->full_name ?? null,
+                'teacher_emp_id'  => $enrollment->teacher->employee_id ?? null,
+                'course_name'     => $enrollment->course->course_name ?? null,
+                'course_code'     => $enrollment->course->course_code ?? null,
+            ];
+            $enrollmentArr = $enrollment->toArray();
+            unset($enrollmentArr['student'], $enrollmentArr['teacher'], $enrollmentArr['course']);
+            $enrollmentArr['extra_info'] = $extra_info;
+            return $enrollmentArr;
+            });
+
         return response()->json(['enrollments' => $enrollments]);
     }
 
@@ -28,6 +44,9 @@ class EnrollmentController extends Controller
         $validator = $this->validateEnrollment($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
+        if ($this->isSlotConflict($request->teacher_id, $request->slots)) {
+            return response()->json(['error' => 'The selected slots conflict with this teacher\'s existing schedule.'], 422);
+        }
         $enrollment = Enrollment::create($request->all());
 
         return response()->json([
@@ -56,6 +75,20 @@ class EnrollmentController extends Controller
         ]);
     }
 
+
+    protected function isSlotConflict($teacher_id, $newSlots)
+    {
+        $existingEnrollments = Enrollment::where('teacher_id', $teacher_id)->get();
+
+        foreach ($existingEnrollments as $enrollment) {
+            $existingSlots = $enrollment->slots;
+            if (array_intersect($existingSlots, $newSlots)) {
+                return true; // Conflict found
+            }
+        }
+        return false; // No conflict
+    }
+
     protected function validateEnrollment(Request $request, $id = null)
     {
         $rules = [
@@ -67,10 +100,6 @@ class EnrollmentController extends Controller
             'starting_date' => 'required|date',
             'slots' => 'required|array|min:1',
             'slots.*' => 'required|string',
-
-
-            'grade' => 'nullable|string|max:10',
-            'semester' => 'required|string|max:20',
             'year' => 'required|integer|min:2000|max:2100',
             'other' => 'nullable|string|max:255',
         ];
@@ -96,19 +125,14 @@ class EnrollmentController extends Controller
             'teacher_id.required' => 'The teacher ID is required.',
             'enrollment_date.required' => 'The enrollment date is required.',
             'enrollment_date.date' => 'The enrollment date must be a valid date.',
-            'startng_date.required' => 'The starting date is required.',
-            'startng_date.date' => 'The starting date must be a valid date.',
+            'starting_date.required' => 'The starting date is required.',
+            'starting_date.date' => 'The starting date must be a valid date.',
             'slots.required' => 'At least one slot is required.',
             'slots.array' => 'The slots must be an array.',
             'slots.min' => 'At least one slot is required.',
             'slots.*.required' => 'Each slot is required.',
             'slots.*.string' => 'Each slot must be a string.',
 
-            'grade.string' => 'The grade must be a string.',
-            'grade.max' => 'The grade may not be greater than 10 characters.',
-            'semester.required' => 'The semester is required.',
-            'semester.string' => 'The semester must be a string.',
-            'semester.max' => 'The semester may not be greater than 20 characters.',
             'year.required' => 'The year is required.',
             'year.integer' => 'The year must be an integer.',
             'year.min' => 'The year must be at least 2000.',

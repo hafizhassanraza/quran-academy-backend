@@ -21,7 +21,10 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $courses = Course::all();
+        $courses = Course::withCount(['enrollments as active_enrollments_count' => function ($query) {
+            $query->where('status', 'active');
+        }])->get();
+
         return response()->json(['courses' => $courses]);
     }
 
@@ -58,24 +61,14 @@ class CourseController extends Controller
         ]);
     }
 
-    protected function validateCourse(Request $request, $id = null)
+    
+    protected function validateCourse(Request $request)
     {
         $rules = [
-            'course_code' => 'required|string|unique:courses,course_code' . ($id ? ",$id" : ''),
+            'course_code' => 'required|string|unique:courses,course_code',
             'course_name' => 'required|string',
             'description' => 'nullable|string',
-            'credits' => 'required|integer|min:0',
-            'department' => 'required|string',
-            'instructor' => 'nullable|string',
-            'schedule' => 'nullable|string',
-            'location' => 'nullable|string',
-            'capacity' => 'nullable|integer|min:0',
             'enrollment_count' => 'nullable|integer|min:0',
-            'prerequisites' => 'nullable|string',
-            'syllabus' => 'nullable|string',
-            'semester' => 'nullable|string',
-            'year' => 'nullable|integer|min:2000',
-            'status' => 'nullable|string',
             'other' => 'nullable|string',
         ];
         $messages = [
@@ -85,24 +78,8 @@ class CourseController extends Controller
             'course_name.required' => 'The course name is required.',
             'course_name.string' => 'The course name must be a string.',
             'description.string' => 'The description must be a string.',
-            'credits.required' => 'The credits are required.',
-            'credits.integer' => 'The credits must be an integer.',
-            'credits.min' => 'The credits must be at least 0.',
-            'department.required' => 'The department is required.',
-            'department.string' => 'The department must be a string.',
-            'instructor.string' => 'The instructor must be a string.',
-            'schedule.string' => 'The schedule must be a string.',
-            'location.string' => 'The location must be a string.',
-            'capacity.integer' => 'The capacity must be an integer.',
-            'capacity.min' => 'The capacity must be at least 0.',
             'enrollment_count.integer' => 'The enrollment count must be an integer.',
             'enrollment_count.min' => 'The enrollment count must be at least 0.',
-            'prerequisites.string' => 'The prerequisites must be a string.',
-            'syllabus.string' => 'The syllabus must be a string.',
-            'semester.string' => 'The semester must be a string.',
-            'year.integer' => 'The year must be an integer.',
-            'year.min' => 'The year must be at least 2000.',
-            'status.string' => 'The status must be a string.',
             'other.string' => 'The other field must be a string.',
         ];
 

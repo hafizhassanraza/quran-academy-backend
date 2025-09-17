@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->date('enrollment_date')->nullable();
-            $table->string('username')->unique();
+            //$table->string('username')->unique();
             $table->string('password');
             $table->timestamp('last_login')->nullable();
             $table->string('national_id')->nullable();

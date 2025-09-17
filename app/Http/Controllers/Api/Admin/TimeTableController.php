@@ -73,6 +73,8 @@ class TimeTableController extends Controller
                 }
 
                 $dayClasses[] = [
+                    'enrollment_id' => $enrollment->id ?? null,
+                    'slot_id' => null,
                     'day' => $day,
                     'slot_code' => $slotCode,
                     'class' => $class,

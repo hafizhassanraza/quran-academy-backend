@@ -31,7 +31,7 @@ class TeacherController extends Controller
     {
         $validator = $this->validateTeacher($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
-
+        $request->merge(['employee_id' => $this->getNextEmployeeID()]);
         $teacher = Teacher::create($request->all());
 
         return response()->json([
@@ -85,15 +85,6 @@ class TeacherController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
     protected function validateTeacherLogin(Request $request)
     {
         $rules = [
@@ -109,41 +100,28 @@ class TeacherController extends Controller
         return Validator::make($request->all(), $rules, $messages);
     }
 
-    protected function validateTeacher(Request $request, $id = null)
+    protected function validateTeacher(Request $request)
     {
-        $uniqueEmployeeId = 'unique:teachers,employee_id';
-        $uniqueEmail = 'unique:teachers,email';
-        $uniqueUsername = 'unique:teachers,username';
-
-        if ($id) {
-            $uniqueEmployeeId .= ',' . $id;
-            $uniqueEmail .= ',' . $id;
-            $uniqueUsername .= ',' . $id;
-        }
-
+        
         return Validator::make($request->all(), [
-            'employee_id'      => ['required', 'string', 'max:50', $uniqueEmployeeId],
             'photo'            => 'nullable|string|max:255',
             'full_name'        => 'required|string|max:255',
             'father_name'      => 'required|string|max:255',
             'gender'           => 'required|in:male,female,other',
             'age'              => 'required|integer|min:18|max:120',
-            'email'            => ['required', 'email', $uniqueEmail],
+            'email'             => 'required|unique:teachers,email|string|max:255',
             'phone'            => 'required|string|max:20',
             'alternate_phone'  => 'nullable|string|max:20',
             'address'          => 'required|string|max:255',
             'city'             => 'required|string|max:100',
             'country'          => 'required|string|max:100',
             'hire_date'        => 'required|date',
-            'username'         => ['required', 'string', 'max:50', $uniqueUsername],
-            'password'         => $id ? 'sometimes|string|min:6|max:255' : 'required|string|min:6|max:255',
-            'last_login'       => 'nullable|date',
+            'password'          => 'required|string|min:6|max:255',
             'national_id'      => 'nullable|string|max:50',
             'time_zone'        => 'nullable|string|max:100',
             'other'            => 'nullable|string|max:255',
         ], [
-            'employee_id.required' => 'Employee ID is required.',
-            'employee_id.unique' => 'Employee ID must be unique.',
+
             'full_name.required' => 'Full name is required.',
             'father_name.required' => 'Father name is required.',
             'gender.required' => 'Gender is required.',
@@ -155,12 +133,20 @@ class TeacherController extends Controller
             'city.required' => 'City is required.',
             'country.required' => 'Country is required.',
             'hire_date.required' => 'Hire date is required.',
-            'username.required' => 'Username is required.',
-            'username.unique' => 'Username must be unique.',
             'password.required' => 'Password is required.',
         ]);
     }
     
+
+    protected function getNextEmployeeID()
+    {
+        $lastTeacher = Teacher::orderBy('id', 'desc')->first();
+        $nextEmpNumber = 1001;
+        if ($lastTeacher && preg_match('/^QET(\d+)$/', $lastTeacher->employee_id, $matches)) {
+            $nextEmpNumber = (int)$matches[1] + 1;
+        }
+        return 'QET' . $nextEmpNumber;
+    }
     
     //create JSON request samples for all methods
     /*
