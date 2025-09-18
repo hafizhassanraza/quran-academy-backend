@@ -14,6 +14,7 @@ use App\Models\Course;
 use App\Models\Chapter;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Models\Slot;
 
 class EnrollmentController extends Controller
 {
