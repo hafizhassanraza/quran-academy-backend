@@ -37,10 +37,18 @@ class Student extends Model
         return $this->hasMany(Enrollment::class);
     }
 
-    public function slots()
+    public function Slots()
     {
-        return $this->hasMany(Slot::class);
+        return $this->hasManyThrough(
+            Slot::class,
+            Enrollment::class,
+            'student_id', // Foreign key on enrollments table...
+            'enrollment_id', // Foreign key on slots table...
+            'id', // Local key on teachers table...
+            'id'  // Local key on enrollments table...
+        );
     }
+    
 
     public function courses()
     {

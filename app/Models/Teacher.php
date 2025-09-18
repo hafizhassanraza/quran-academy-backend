@@ -35,7 +35,14 @@ class Teacher extends Model
 
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasManyThrough(
+            Course::class,
+            Enrollment::class,
+            'teacher_id',   // Foreign key on enrollments table...
+            'id',           // Foreign key on courses table...
+            'id',           // Local key on teachers table...
+            'course_id'     // Local key on enrollments table...
+        );
     }
     public function studentEnrollments()
     {
@@ -53,7 +60,21 @@ class Teacher extends Model
             'id'  // Local key on enrollments table...
         )->where('slots.status', 'completed');
     }
+
+    public function Slots()
+    {
+        return $this->hasManyThrough(
+            Slot::class,
+            Enrollment::class,
+            'teacher_id', // Foreign key on enrollments table...
+            'enrollment_id', // Foreign key on slots table...
+            'id', // Local key on teachers table...
+            'id'  // Local key on enrollments table...
+        );
+    }
     
+
+
     
 
 }
