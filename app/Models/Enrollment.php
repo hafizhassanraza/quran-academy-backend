@@ -39,7 +39,7 @@ class Enrollment extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-    public function slots()
+    public function slotsRegistered()
     {
         return $this->hasMany(Slot::class);
     }
@@ -48,6 +48,41 @@ class Enrollment extends Model
     {
         return $this->hasOne(Slot::class)->where('status', 'rescheduled');
     }
+
+
+
+
+
+
+
+
+
+
+    
+
+
+    public function allCompletedSlots()
+    {
+        return $this->hasMany(Slot::class)->where('status', 'completed');
+    }
+
+
+
+    public function completedSlots($date)
+    {
+        return $this->hasMany(Slot::class)->where('status', 'completed')->whereDate('slot_date', $date);
+    }
+
+    
+
+    
+
+
+
+
+
+
+    
    
 
 }

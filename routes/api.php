@@ -21,9 +21,13 @@ Route::apiResource('teachers', TeacherController::class);
 Route::apiResource('chapters', ChapterController::class);
 Route::apiResource('courses', CourseController::class);
 Route::apiResource('enrollments', EnrollmentController::class);
-Route::apiResource('slots', SlotController::class);
 Route::apiResource('accounts', AccountController::class);
+Route::apiResource('slots', SlotController::class);
 
+
+
+Route::post('slots/teacherSlots', [SlotController::class, 'todayTeacherSlots']);
+Route::post('slots/slotOfTeacher', [SlotController::class, 'slotOfTeacher']);
 
 
 Route::prefix('timetable')->group(function () {

@@ -61,7 +61,7 @@ class Teacher extends Model
         )->where('slots.status', 'completed');
     }
 
-    public function Slots()
+    public function registeredSlots()
     {
         return $this->hasManyThrough(
             Slot::class,

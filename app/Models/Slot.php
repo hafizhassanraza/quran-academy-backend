@@ -17,6 +17,8 @@ class Slot extends Model
         'start_time',
         'end_time',
         'status',
+        'reschedule_reason',// pending-migrations
+        'reschedule', //true/false // pending-migrations
         'other',
 
     ];
@@ -41,7 +43,20 @@ class Slot extends Model
     }
 
 
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
 
+    public function scopeForDate($query, $date)
+    {
+        return $query->whereDate('slot_date', $date);
+    }
 
+    public function scopeSlotCode($query, $slotCode)
+    {
+        return $query->where('slot_code', $slotCode);
+    }
+    
 
 }
