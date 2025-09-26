@@ -536,7 +536,7 @@ class SlotController extends Controller
             'start_time'      => 'nullable|date_format:H:i',
             'end_time'        => 'nullable|date_format:H:i|after:start_time',
             'other'           => 'nullable|string|max:255',
-            'status'          => 'in:scheduled,started,completed,missed,rescheduled',
+            'status'          => 'in:scheduled,active,started,completed,missed,rescheduled',
         ];
         $messages = [
             'enrollment_id.required'   => 'The enrollment is required.',
