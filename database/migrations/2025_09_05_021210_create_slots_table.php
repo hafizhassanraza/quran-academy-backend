@@ -22,7 +22,9 @@ return new class extends Migration
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->string('other')->nullable();
-            $table->enum('status', ['scheduled', 'started', 'completed', 'missed', 'rescheduled'])->default('scheduled');
+            $table->string('reschedule_reason')->nullable();
+            $table->string('reschedule')->nullable();
+            $table->enum('status', ['scheduled','active','started', 'completed', 'missed', 'rescheduled'])->default('scheduled');
 
             $table->timestamps();
         });

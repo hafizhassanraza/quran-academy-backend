@@ -31,11 +31,7 @@ class SlotController extends Controller
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
 
-        if ($request->input('status') === 'rescheduled') {
-            if($this->isSlotConflict($request->teacher_id, [$request->slot_code])) {
-                return response()->json(['error' => 'The rescheduled date conflicts with this teacher\'s existing schedule.'], 422);
-            }
-        }
+        
 
 
         $slot = Slot::create($request->all());
@@ -56,6 +52,14 @@ class SlotController extends Controller
     {
         $validator = $this->validateSlot($request, $id);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+
+        if ($request->input('status') === 'rescheduled') {
+            if($this->isSlotConflict($request->teacher_id, [$request->slot_code])) {
+                return response()->json(['error' => 'The rescheduled date conflicts with this teacher\'s existing schedule.'], 422);
+            }
+        }
+
+
 
         $slot = Slot::findOrFail($id);
         $slot->update($request->all());
@@ -166,6 +170,62 @@ class SlotController extends Controller
 
     }
 
+
+
+    public function getAllCompletedSlotsOfTheDay(Request $request)
+    {
+        $enrollments = Enrollment::with(['student', 'course'])->get();
+        $today = $request->slot_day;
+        $date = $request->date; // 'Y-m-d'
+        $slots = [];
+
+        foreach ($enrollments as $enrollment) {
+
+            foreach (($enrollment->slots ?? []) as $slotCode) // enrollments contain array of slot codes
+            {
+
+                //$existingSlots = $enrollment->slotsRegistered()->forDate($date)->pluck('slot_code')->toArray();
+
+                if (str_starts_with($slotCode, $today)) {
+
+                    // against this enrollment -> all (completed, start, active, reschedule) slots registered -> for date -> slot code - > first
+                    $completedSlot = $enrollment->slotsRegistered()->forDate($date)->status('completed')->first();
+
+
+
+                    if($completedSlot) {
+                        $completedSlot->student = $enrollment->student;
+                        $completedSlot->course = $enrollment->course;
+                        $slots[] = $completedSlot->toArray();
+                    }
+                    else {
+                        $slots[] = [
+                            'enrollment_id' => $enrollment->id,
+                            'chapter_id' => null,
+                            'slot_code' => $slotCode,
+                            'slot_date' => null,
+                            'reschedule_date' => null,
+                            'start_time' => null,
+                            'end_time' => null,
+                            'status' => "Missed",
+                            'reschedule_reason' => null,
+                            'reschedule' => null,
+                            'other' => null,
+                            'student' => $enrollment->student,
+                            'course' => $enrollment->course,
+                        ];
+                    }
+                }
+            }
+            
+        }
+
+
+        return response()->json(['slots' => $slots]);
+
+
+
+    }
 
 
 
