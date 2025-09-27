@@ -106,11 +106,13 @@ class SlotController extends Controller
 
 
                     if($regularSlot ) {
+                        $regularSlot->type = 'regular';
                         $regularSlot->student = $enrollment->student;
                         $regularSlot->course = $enrollment->course;
                         $slots[] = $regularSlot->toArray();
                     }
                     elseif($rescheduledSlots) {
+                        $rescheduledSlots->type = 'rescheduled';
                         $rescheduledSlots->student = $enrollment->student;
                         $rescheduledSlots->course = $enrollment->course;
                         $slots[] = $rescheduledSlots->toArray();
@@ -124,7 +126,8 @@ class SlotController extends Controller
                             'reschedule_date' => null,
                             'start_time' => null,
                             'end_time' => null,
-                            'status' => "regular",
+                            'type' => "regular",
+                            'status' => "not registered",
                             'reschedule_reason' => null,
                             'reschedule' => null,
                             'other' => null,
