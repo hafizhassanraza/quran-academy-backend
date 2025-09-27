@@ -26,6 +26,7 @@ Route::apiResource('slots', SlotController::class);
 
 
 
+Route::post('slots/updateSlot', [SlotController::class, 'updateSlot']);
 Route::post('slots/teacherSlots', [SlotController::class, 'todayTeacherSlots']);
 Route::post('slots/slotOfTeacher', [SlotController::class, 'slotOfTeacher']);
 Route::post('slots/allCompleted', [SlotController::class, 'getAllCompletedSlotsOfTheDay']);

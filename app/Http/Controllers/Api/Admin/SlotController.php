@@ -48,10 +48,12 @@ class SlotController extends Controller
         return response()->json(['slot' => $slot]);
     }
 
-    public function update(Request $request, $id)
+    public function updateSlot(Request $request)
     {
-        $validator = $this->validateSlot($request, $id);
+        // Validate the request including the status field
+        $validator = $this->validateSlotUpdate($request);
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+        
 
         if ($request->input('status') === 'rescheduled') {
             if($this->isSlotConflict($request->teacher_id, [$request->slot_code])) {
@@ -60,18 +62,14 @@ class SlotController extends Controller
         }
 
 
-
-        $slot = Slot::findOrFail($id);
+        $slot = Slot::findOrFail($request->id);
         $slot->update($request->all());
+        $slot->refresh();
 
         return response()->json([
             'message' => 'Slot updated successfully',
             'slot' => $slot
         ]);
-
-
-
-
     }
 
 
@@ -526,6 +524,40 @@ class SlotController extends Controller
     }
  */
 
+
+
+    protected function validateSlotUpdate(Request $request)
+    {
+        $rules = [
+            'id'                => 'required|exists:slots,id',
+            'chapter_id'        => 'nullable|exists:chapters,id',
+            'reschedule_date'   => 'nullable|date|after_or_equal:slot_date',
+            'start_time'        => 'nullable|date_format:H:i',
+            'end_time'          => 'nullable|date_format:H:i|after:start_time',
+            'other'             => 'nullable|string|max:255',
+            'status'            => 'in:scheduled,active,started,completed,missed,rescheduled',
+        ];
+        $messages = [
+            'id.required'              => 'The slot ID is required.',
+            'id.exists'                => 'The specified slot does not exist.',
+            'chapter_id.exists'        => 'The selected chapter does not exist.',
+            'reschedule_date.date'     => 'The reschedule date must be a valid date.',
+            'reschedule_date.after_or_equal' => 'The reschedule date must be after or equal to the slot date.',
+            'start_time.required'      => 'The start time is required.',
+            'start_time.date_format'   => 'The start time must be in the format H:i.',
+            'end_time.required'        => 'The end time is required.',
+            'end_time.date_format'     => 'The end time must be in the format H:i.',
+            'end_time.after'           => 'The end time must be after the start time.',
+            'other.string'             => 'The other field must be a string.',
+            'other.max'                => 'The other field may not be greater than 255 characters.',
+            'status.required'          => 'The status is required.',
+            'status.in'                => 'The selected status is invalid. Allowed values: scheduled, started, completed, missed, rescheduled.',
+        ];
+
+        return Validator::make($request->all(), $rules, $messages);
+
+        
+    }
 
     protected function validateSlot(Request $request, $id = null)
     {
