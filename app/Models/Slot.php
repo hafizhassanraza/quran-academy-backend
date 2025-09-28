@@ -14,8 +14,10 @@ class Slot extends Model
         'slot_code',
         'slot_date',
         'reschedule_date',
+        'active_time',
         'start_time',
         'end_time',
+        'type',
         'status',
         'reschedule_reason',// pending-migrations
         'reschedule', //true/false // pending-migrations

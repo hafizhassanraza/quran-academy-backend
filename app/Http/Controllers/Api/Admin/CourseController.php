@@ -43,7 +43,7 @@ class CourseController extends Controller
 
     public function show($id)
     {
-        $course = Course::findOrFail($id);
+        $course = Course::with('chapters')->findOrFail($id);
         return response()->json(['course' => $course]);
     }
 

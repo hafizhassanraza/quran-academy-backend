@@ -532,10 +532,13 @@ class SlotController extends Controller
             'id'                => 'required|exists:slots,id',
             'chapter_id'        => 'nullable|exists:chapters,id',
             'reschedule_date'   => 'nullable|date|after_or_equal:slot_date',
+            'reschedule'          => 'nullable|string',
+            'reschedule_reason'   => 'nullable|string',
+            'active_time'        => 'nullable|date_format:H:i',
             'start_time'        => 'nullable|date_format:H:i',
             'end_time'          => 'nullable|date_format:H:i|after:start_time',
             'other'             => 'nullable|string|max:255',
-            'status'            => 'in:scheduled,active,started,completed,missed,rescheduled',
+            'status'            => 'in:scheduled,active,started,completed,missed,rescheduled,leaved',
         ];
         $messages = [
             'id.required'              => 'The slot ID is required.',
@@ -567,11 +570,14 @@ class SlotController extends Controller
             'chapter_id'      => 'nullable|exists:chapters,id',
             'slot_code'       => 'required|string|max:10',
             'slot_date'       => 'required|date',
+            'reschedule'          => 'nullable|string',
+            'reschedule_reason'   => 'nullable|string',
             'reschedule_date' => 'nullable|date|after_or_equal:slot_date',
+            'active_time'        => 'nullable|date_format:H:i',
             'start_time'      => 'nullable|date_format:H:i',
             'end_time'        => 'nullable|date_format:H:i|after:start_time',
             'other'           => 'nullable|string|max:255',
-            'status'          => 'in:scheduled,active,started,completed,missed,rescheduled',
+            'status'          => 'in:scheduled,active,started,completed,missed,rescheduled,leaved',
         ];
         $messages = [
             'enrollment_id.required'   => 'The enrollment is required.',
