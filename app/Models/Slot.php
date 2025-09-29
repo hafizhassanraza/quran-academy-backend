@@ -49,6 +49,10 @@ class Slot extends Model
     {
         return $query->where('status', $status);
     }
+    public function scopeReschedule($query, $reschedule)
+    {
+        return $query->where('reschedule', $reschedule);
+    }   
 
     public function scopeForDate($query, $date)
     {

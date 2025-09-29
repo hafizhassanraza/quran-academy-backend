@@ -26,6 +26,11 @@ Route::apiResource('slots', SlotController::class);
 
 
 
+Route::post('slots/registeredSlots', [SlotController::class, 'registeredSlots']);
+Route::post('slots/unregisteredSlots', [SlotController::class, 'unregisteredSlots']);
+Route::post('slots/allReqSlots', [SlotController::class, 'allRescheduleReqSlots']);
+
+
 Route::post('slots/updateSlot', [SlotController::class, 'updateSlot']);
 Route::post('slots/teacherSlots', [SlotController::class, 'todayTeacherSlots']);
 Route::post('slots/slotOfTeacher', [SlotController::class, 'slotOfTeacher']);

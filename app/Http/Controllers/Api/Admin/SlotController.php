@@ -75,6 +75,110 @@ class SlotController extends Controller
 
 
 
+
+    // ********************* ADMIN SLOTS *************************
+
+    //by-date // comleted + leaved (bydefault without reschedule request) + started + active 
+    public function registeredSlots(Request $request)
+    {
+        $slots = Slot::status($request->status)->forDate($request->date)->get();
+        $slots->load('enrollment.student', 'enrollment.course', 'enrollment.teacher');
+
+        return response()->json([
+            'slots' => $slots
+        ]);
+    }
+
+    // missed + current slot (not active) +   upcoming
+    public function unregisteredSlots(Request $request)
+    {
+        $enrollments = Enrollment::with(['student', 'course'])->get();
+
+        $todayRegisteredSlots = Slot::forDate($request->date)->get();
+        $slotDay = $request->slot_day;
+        $todayNotRegisteredSlots = [];
+        foreach ($enrollments as $enrollment) {
+            $allSlotCodes = $enrollment->slots ?? [];
+            foreach ($allSlotCodes as $slotCode) {
+                if (str_starts_with($slotCode, $slotDay) && !$todayRegisteredSlots->contains('slot_code', $slotCode)) {
+                    $todayNotRegisteredSlots[] = [
+                        'enrollment_id' => $enrollment->id,
+                        'chapter_id' => null,
+                        'slot_code' => $slotCode,
+                        'slot_date' => null,
+                        'reschedule_date' => null,
+                        'start_time' => null,
+                        'end_time' => null,
+                        'status' => 'not registered',
+                        'reschedule_reason' => null,
+                        'reschedule' => null,
+                        'other' => 'No record found, assumed not active',
+                        'student' => $enrollment->student,
+                        'course' => $enrollment->course,
+                    ];
+                }
+            }
+        }
+        return response()->json(['slots' => $todayNotRegisteredSlots]);
+
+        
+    }
+
+    // Req. Reschedule
+    public function allRescheduleReqSlots(Request $request)
+    {
+        $slots = Slot::status('leaved')->reschedule($request->reschedule)->get();
+        $slots->load('enrollment.student', 'enrollment.course', 'enrollment.teacher');
+
+        return response()->json([
+            'slots' => $slots
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ********************* TEACHER SLOTS *************************
+
+
     public function todayTeacherSlots(Request $request)
     {
         // Get all enrollments for the given teacher with slots for today
@@ -533,6 +637,7 @@ class SlotController extends Controller
             'chapter_id'        => 'nullable|exists:chapters,id',
             'reschedule_date'   => 'nullable|date|after_or_equal:slot_date',
             'reschedule'          => 'nullable|string',
+            'slot_code'         => 'nullable|string|max:10',
             'reschedule_reason'   => 'nullable|string',
             'active_time'        => 'nullable|date_format:H:i',
             'start_time'        => 'nullable|date_format:H:i',
@@ -546,6 +651,7 @@ class SlotController extends Controller
             'chapter_id.exists'        => 'The selected chapter does not exist.',
             'reschedule_date.date'     => 'The reschedule date must be a valid date.',
             'reschedule_date.after_or_equal' => 'The reschedule date must be after or equal to the slot date.',
+            'slot_code.required'       => 'The slot code is required.',
             'start_time.required'      => 'The start time is required.',
             'start_time.date_format'   => 'The start time must be in the format H:i.',
             'end_time.required'        => 'The end time is required.',
