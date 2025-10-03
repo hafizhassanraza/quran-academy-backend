@@ -26,6 +26,11 @@ Route::apiResource('slots', SlotController::class);
 
 
 
+
+
+Route::post('accounts/withdraw', [AccountController::class, 'withdraw']);
+Route::post('teachers/transactions', [TeacherController::class, 'transactions']);
+
 Route::post('slots/registeredSlots', [SlotController::class, 'registeredSlots']);
 Route::post('slots/unregisteredSlots', [SlotController::class, 'unregisteredSlots']);
 Route::post('slots/allReqSlots', [SlotController::class, 'allRescheduleReqSlots']);

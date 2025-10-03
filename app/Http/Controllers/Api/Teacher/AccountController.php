@@ -108,6 +108,40 @@ class AccountController extends Controller
 
 
 
+    public function withdraw(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'teacher_id' => 'required|exists:teachers,id',
+            'amount'     => 'required|numeric|min:1',
+            'reference'  => 'nullable|string|max:100',
+            'other'      => 'nullable|string|max:255',
+        ], [
+            'teacher_id.exists' => 'The selected teacher does not exist.',
+            'amount.min'        => 'The withdrawal amount must be at least 1.'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $data = $validator->validated();
+        $data['type'] = 'withdrawal';
+        $data['status'] = 'approved';
+
+        
+        $teacher = Teacher::find($data['teacher_id']);
+        if ($teacher) {
+            if ($teacher->balance >= $data['amount']) {
+                $transaction = Transaction::create($data);
+                $teacher->balance -= $data['amount'];
+                $teacher->save();
+            } else {
+                return response()->json(['errors' => 'Insufficient balance for withdrawal.'], 422);
+            }
+        }
+
+        return response()->json(['transaction' => $transaction], 201);
+    }
 
 
 

@@ -15,6 +15,7 @@ use App\Models\Chapter;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Slot;
+use App\Models\Transaction;
 
 
 class SlotController extends Controller
@@ -534,9 +535,19 @@ class SlotController extends Controller
         $teacher = Teacher::find($teacher_id);
         if ($teacher) {
             $teacher->balance += $amount;
+            $teacher->transactions()->create([
+                'amount' => $amount,
+                'type' => 'credit',
+                'status' => 'completed',
+                'reference' => 'Slot Completion',
+                'other' => 'Balance updated for completed slot'
+            ]);
             $teacher->save();
+
         }
     }
+
+
 
 
 

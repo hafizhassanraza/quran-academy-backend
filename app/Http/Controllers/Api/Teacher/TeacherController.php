@@ -72,6 +72,13 @@ class TeacherController extends Controller
     }
 
 
+    public function transactions(Request $request)
+    {
+        $teacher = Teacher::findOrFail($request->teacher_id);
+        $transactions = $teacher->transactions()->get();
+        return response()->json(['transactions' => $transactions]);
+    }
+
 
 
     public function teacherLogin(Request $request)
