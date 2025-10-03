@@ -204,6 +204,8 @@ class TimeTableController extends Controller
         return response()->json($slots);
     }
 
+   
+
     public function getTimeTableBySlotNumber($slotNumber)
     {
         // Validate slot number

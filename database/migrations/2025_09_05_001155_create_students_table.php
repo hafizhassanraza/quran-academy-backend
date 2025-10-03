@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->date('enrollment_date')->nullable();
+            $table->json('temp_slots'); // Store slots as simple string array
+
             //$table->string('username')->unique();
             $table->string('password');
             $table->timestamp('last_login')->nullable();

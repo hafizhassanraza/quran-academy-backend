@@ -62,9 +62,18 @@ class SlotController extends Controller
         }
 
 
+
         $slot = Slot::findOrFail($request->id);
         $slot->update($request->all());
         $slot->refresh();
+
+        // If the slot status is updated to 'completed', update the teacher's balance
+        if ($request->input('status') === 'completed') {
+            $enrollment = Enrollment::find($slot->enrollment_id);
+            if ($enrollment) {
+                $this->updateTeacherBalance($enrollment->teacher_id, '50'); // Assuming each completed slot adds 50 to the teacher's balance    
+            }
+        }
 
         return response()->json([
             'message' => 'Slot updated successfully',
@@ -399,7 +408,6 @@ class SlotController extends Controller
 
 
 
-
     /**
      * Get slots by type: previous, current, upcoming.
      * 
@@ -513,6 +521,23 @@ class SlotController extends Controller
 
         return $resultSlots;
     }
+
+
+
+
+
+    //***************************  Utilities *******************************//
+
+
+    protected function updateTeacherBalance($teacher_id, $amount) 
+    {
+        $teacher = Teacher::find($teacher_id);
+        if ($teacher) {
+            $teacher->balance += $amount;
+            $teacher->save();
+        }
+    }
+
 
 
     protected function isSlotConflict($teacher_id, $newSlots)

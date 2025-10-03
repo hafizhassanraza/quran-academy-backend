@@ -22,6 +22,7 @@ class Student extends Model
         'city',
         'country',
         'enrollment_date',
+        'temp_slots', // New field for temporary slots
         //'username',
         'password',
         'last_login',
@@ -31,6 +32,9 @@ class Student extends Model
         'status',
     ];
 
+     protected $casts = [
+        'temp_slots' => 'array',
+    ];
 
     public function enrollments()
     {

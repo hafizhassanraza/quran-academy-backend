@@ -44,7 +44,7 @@ class StudentController extends Controller
 
     public function show($id)
     {
-        $student = Student::findOrFail($id)->load('enrollments', 'slots', 'courses', 'teachers');
+        $student = Student::findOrFail($id)->load('enrollments', 'courses', 'teachers');
         return response()->json(['student' => $student]);
     }
 
@@ -126,6 +126,8 @@ class StudentController extends Controller
             'city'              => 'required|string|max:100',
             'country'           => 'required|string|max:100',
             'enrollment_date'   => 'required|date',
+            'temp_slots'        => 'required|array|min:1',
+            'temp_slots.*'      => 'required|string',
             //'username'          => 'required|string|max:50|unique:students,username',
             'password'          => 'required|string|min:6|max:255',
             'national_id'       => 'nullable|string|max:50',
@@ -148,6 +150,12 @@ class StudentController extends Controller
             //'username.required' => 'Username is required.',
             //'username.unique' => 'Username must be unique.',
             'password.required' => 'Password is required.',
+
+            'temp_slots.required' => 'At least one slot is required.',
+            'temp_slots.array' => 'The slots must be an array.',
+            'temp_slots.min' => 'At least one slot is required.',
+            'temp_slots.*.required' => 'Each slot is required.',
+            'temp_slots.*.string' => 'Each slot must be a string.',
         ]);
     }
 

@@ -44,7 +44,7 @@ class TeacherController extends Controller
 
     public function show($id)
     {
-        $teacher = Teacher::findOrFail($id)->load('slots', 'courses', 'studentEnrollments');
+        $teacher = Teacher::findOrFail($id)->load( 'courses', 'studentEnrollments');
         return response()->json(['teacher' => $teacher]);
     }
 
