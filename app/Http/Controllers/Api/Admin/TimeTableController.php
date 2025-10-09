@@ -147,6 +147,7 @@ class TimeTableController extends Controller
                 'teacher_time_zone'  => $teacher->time_zone ?? null,
                 'slot_code'          => $slotCode,
                 'status'             => 'rescheduled',
+                'enrollment_status'  => $rescheduledEnrollment->status ?? null,
                 ];
                 $enrollmentId = $rescheduledEnrollment->id ?? null;
                 $hasClass = true;
@@ -175,6 +176,7 @@ class TimeTableController extends Controller
                 'teacher_time_zone'  => $teacher->time_zone ?? null,
                 'slot_code'          => $slotCode,
                 'status'             => 'regular',
+                'enrollment_status'  => $enrollment->status ?? null,
                 ];
                 $enrollmentId = $enrollment->id ?? null;
                 $hasClass = true;
@@ -271,6 +273,8 @@ class TimeTableController extends Controller
                 'teacher_time_zone'  => $teacherObj->time_zone ?? null,
                 'slot_code'          => $slotCode,
                 'status'             => $rescheduledEnrollment ? 'rescheduled' : 'regular',
+                'enrollment_status'  => $class->status ?? null,
+
                 ];
             } else {
                 $classData = null;
@@ -354,6 +358,7 @@ class TimeTableController extends Controller
                         'teacher_time_zone'  => $teacher->time_zone ?? null,
                         'slot_code'          => $slotCode,
                         'status'             => 'rescheduled',
+                        'enrollment_status'  => $rescheduledEnrollment->status ?? null,
                     ];
 
                     $timetable[] = [
@@ -387,6 +392,7 @@ class TimeTableController extends Controller
                         'teacher_time_zone'  => $teacher->time_zone ?? null,
                         'slot_code'          => $slotCode,
                         'status'             => 'regular',
+                        'enrollment_status'  => $enrollment->status ?? null,
                     ];
 
                     $timetable[] = [
