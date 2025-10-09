@@ -130,7 +130,7 @@ class EnrollmentController extends Controller
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:teachers,id',
-
+            'status' => 'required|string|in:active,trail,completed,dropped',
             'enrollment_date' => 'required|date',
             'starting_date' => 'required|date',
             'slots' => 'required|array|min:1',

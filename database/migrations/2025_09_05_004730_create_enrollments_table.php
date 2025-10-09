@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('grade')->nullable();
             $table->year('year')->nullable();
             $table->string('other')->nullable();
-            $table->enum('status', ['enrolled', 'completed', 'dropped'])->default('enrolled');
+            $table->enum('status', ['active', 'trail', 'completed', 'dropped'])->default('active');
 
             $table->timestamps();
         });
