@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('national_id')->nullable();
             $table->string('time_zone')->nullable();
             $table->string('other')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'dropped'])->default('active');
 
             $table->timestamps();
         });

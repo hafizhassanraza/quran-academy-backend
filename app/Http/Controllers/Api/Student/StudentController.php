@@ -133,6 +133,8 @@ class StudentController extends Controller
             'national_id'       => 'nullable|string|max:50',
             'time_zone'         => 'nullable|string|max:100',
             'other'             => 'nullable|string|max:255',
+            'status'            => 'nullable|in:active,inactive,dropped',
+
         ], [
             //'registration_no.required' => 'Registration number is required.',
             //'registration_no.unique' => 'Registration number must be unique.',
@@ -159,10 +161,10 @@ class StudentController extends Controller
         ]);
     }
 
-    protected function getNextRegistrationNo()
+    public function getNextRegistrationNo()
     {
         $lastStudent = Student::orderBy('id', 'desc')->first();
-        $nextRegNumber = 1001;
+        $nextRegNumber = 2001;
         if ($lastStudent && preg_match('/^QES(\d+)$/', $lastStudent->registration_no, $matches)) {
             $nextRegNumber = (int)$matches[1] + 1;
         }

@@ -49,4 +49,6 @@ Route::prefix('timetable')->group(function () {
 });
 
 Route::post('student/login', [StudentController::class, 'studentLogin']);
+Route::get('student/nextRegNum', [StudentController::class, 'getNextRegistrationNo']);
+Route::get('teacher/nextEmpID', [TeacherController::class, 'getNextEmployeeID']);
 Route::post('teacher/login', [TeacherController::class, 'teacherLogin']);

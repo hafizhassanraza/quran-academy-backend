@@ -129,6 +129,7 @@ class TeacherController extends Controller
             'national_id'      => 'nullable|string|max:50',
             'time_zone'        => 'nullable|string|max:100',
             'other'            => 'nullable|string|max:255',
+            'status'           => 'nullable|in:active,inactive,dropped',
         ], [
 
             'full_name.required' => 'Full name is required.',
@@ -147,7 +148,7 @@ class TeacherController extends Controller
     }
     
 
-    protected function getNextEmployeeID()
+    public function getNextEmployeeID()
     {
         $lastTeacher = Teacher::orderBy('id', 'desc')->first();
         $nextEmpNumber = 1001;
