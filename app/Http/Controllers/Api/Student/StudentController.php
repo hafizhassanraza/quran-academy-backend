@@ -50,9 +50,6 @@ class StudentController extends Controller
 
     public function update(Request $request, $id)
     {
-
-        $validator = $this->validateStudent($request);
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
         
         $student = Student::findOrFail($id);
         $student->update($request->all());
@@ -63,6 +60,61 @@ class StudentController extends Controller
         ]);
     }
 
+
+    public function partialUpdate(Request $request, $id)
+    {
+        // Find student
+        $student = Student::findOrFail($id);
+
+        // Define validation rules but make them conditional with "sometimes"
+        $rules = [
+            'photo'             => 'sometimes|nullable|string|max:255',
+            'full_name'         => 'sometimes|string|max:255',
+            'father_name'       => 'sometimes|string|max:255',
+            'gender'            => 'sometimes|in:male,female,other',
+            'age'               => 'sometimes|integer|min:1|max:120',
+            'email'             => 'sometimes|string|max:255|unique:students,email,' . $id,
+            'phone'             => 'sometimes|string|max:20',
+            'alternate_phone'   => 'sometimes|nullable|string|max:20',
+            'address'           => 'sometimes|string|max:255',
+            'city'              => 'sometimes|string|max:100',
+            'country'           => 'sometimes|string|max:100',
+            'enrollment_date'   => 'sometimes|date',
+            'temp_slots'        => 'sometimes|array|min:1',
+            'temp_slots.*'      => 'sometimes|string',
+            'password'          => 'sometimes|string|min:6|max:255',
+            'national_id'       => 'sometimes|nullable|string|max:50',
+            'time_zone'         => 'sometimes|nullable|string|max:100',
+            'other'             => 'sometimes|nullable|string|max:255',
+            'status'            => 'sometimes|in:active,inactive,dropped',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Normalize age if provided (Postman might send as string)
+        if ($request->has('age')) {
+            $request->merge(['age' => (int) $request->input('age')]);
+        }
+
+        // Only update fields that are allowed/present
+        $allowed = [
+            'photo','full_name','father_name','gender','age','email','phone',
+            'alternate_phone','address','city','country','enrollment_date',
+            'temp_slots','password','national_id','time_zone','other','status'
+        ];
+        $data = $request->only($allowed);
+
+        // Apply update
+        $student->update($data);
+
+        return response()->json([
+            'message' => 'Student updated successfully (partial)',
+            'student' => $student->fresh()
+        ]);
+    }
     public function destroy($id)
     {
         $student = Student::findOrFail($id);

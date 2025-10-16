@@ -50,8 +50,8 @@ class TeacherController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validator = $this->validateTeacher($request, $id);
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+        //$validator = $this->validateTeacher($request, $id);
+        //if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
         $teacher = Teacher::findOrFail($id);
         $teacher->update($request->all());
