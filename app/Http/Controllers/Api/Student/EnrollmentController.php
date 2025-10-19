@@ -64,8 +64,8 @@ class EnrollmentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validator = $this->validateEnrollment($request, $id);
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+        //$validator = $this->validateEnrollment($request, $id);
+        //if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
         $enrollment = Enrollment::findOrFail($id);
         $enrollment->update($request->all());
