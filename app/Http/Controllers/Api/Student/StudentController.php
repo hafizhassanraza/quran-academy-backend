@@ -112,8 +112,10 @@ class StudentController extends Controller
         $student->update($data);
 
         // update enrollment status | same as student status
-        $student->enrollments()->update(['status' => $student->status]);
-
+        //if enrollment exists
+        if ($student->enrollments()->exists()) {
+            $student->enrollments()->update(['status' => $student->status]);
+        }
 
         return response()->json([
             'message' => 'Student updated successfully ',
