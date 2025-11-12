@@ -73,9 +73,9 @@ class StudentController extends Controller
             'father_name'       => 'sometimes|string|max:255',
             'gender'            => 'sometimes|in:male,female,other',
             'age'               => 'sometimes|integer|min:1|max:120',
-            'email'             => 'sometimes|string|max:255|unique:students,email,' . $id,
+            'email'             => 'sometimes|string|max:50',
             'phone'             => 'sometimes|string|max:20',
-            'alternate_phone'   => 'sometimes|nullable|string|max:20',
+            'alternate_phone'   => 'sometimes|string|max:20',
             'address'           => 'sometimes|string|max:255',
             'city'              => 'sometimes|string|max:100',
             'country'           => 'sometimes|string|max:100',
@@ -116,7 +116,7 @@ class StudentController extends Controller
 
 
         return response()->json([
-            'message' => 'Student updated successfully (partial)',
+            'message' => 'Student updated successfully ',
             'student' => $student->fresh()
         ]);
     }
@@ -175,11 +175,11 @@ class StudentController extends Controller
             'full_name'         => 'required|string|max:255',
             'father_name'       => 'required|string|max:255',
             'gender'            => 'required|in:male,female,other',
-            'age'               => 'required|integer|min:1|max:120',
-            'email'             => 'required|unique:students,email|string|max:255',
-            'phone'             => 'required|string|max:20',
+            'age'               => 'nullable|integer|min:1|max:120',
+            'email'             => 'nullable|string|max:50',
+            'phone'             => 'nullable|string|max:20',
             'alternate_phone'   => 'nullable|string|max:20',
-            'address'           => 'required|string|max:255',
+            'address'           => 'nullable|string|max:255',
             'city'              => 'required|string|max:100',
             'country'           => 'required|string|max:100',
             'enrollment_date'   => 'required|date',
@@ -199,11 +199,7 @@ class StudentController extends Controller
             'full_name.required' => 'Full name is required.',
             'father_name.required' => 'Father name is required.',
             'gender.required' => 'Gender is required.',
-            'age.required' => 'Age is required.',
-            'email.required' => 'Email is required.',
-            'email.unique' => 'Email must be unique.',
-            'phone.required' => 'Phone is required.',
-            'address.required' => 'Address is required.',
+            
             'city.required' => 'City is required.',
             'country.required' => 'Country is required.',
             'enrollment_date.required' => 'Enrollment date is required.',

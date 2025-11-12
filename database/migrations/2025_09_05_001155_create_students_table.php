@@ -20,14 +20,14 @@ return new class extends Migration
             $table->string('father_name');
             $table->enum('gender', ['male', 'female', 'other']);
             $table->integer('age')->nullable();
-            $table->string('email')->unique();
-            $table->string('phone');
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
             $table->string('alternate_phone')->nullable();
             $table->text('address')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->date('enrollment_date')->nullable();
-            $table->json('temp_slots'); // Store slots as simple string array
+            $table->json('temp_slots')->nullable(); // Store slots as simple string array
 
             //$table->string('username')->unique();
             $table->string('password');
