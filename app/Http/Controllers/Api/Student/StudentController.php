@@ -86,7 +86,8 @@ class StudentController extends Controller
             'national_id'       => 'sometimes|nullable|string|max:50',
             'time_zone'         => 'sometimes|nullable|string|max:100',
             'other'             => 'sometimes|nullable|string|max:255',
-            'status'            => 'sometimes|in:active,inactive,dropped',
+            'status'            => 'sometimes|in:active,inactive,trail,completed,dropped',
+
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -109,6 +110,10 @@ class StudentController extends Controller
 
         // Apply update
         $student->update($data);
+
+        // update enrollment status | same as student status
+        $student->enrollments()->update(['status' => $student->status]);
+
 
         return response()->json([
             'message' => 'Student updated successfully (partial)',
@@ -185,7 +190,8 @@ class StudentController extends Controller
             'national_id'       => 'nullable|string|max:50',
             'time_zone'         => 'nullable|string|max:100',
             'other'             => 'nullable|string|max:255',
-            'status'            => 'nullable|in:active,inactive,dropped',
+            'status'            => 'nullable|in:active,inactive,trail,completed,dropped',
+
 
         ], [
             //'registration_no.required' => 'Registration number is required.',
