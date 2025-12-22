@@ -91,13 +91,24 @@ class SlotController extends Controller
     //by-date // comleted + leaved (bydefault without reschedule request) + started + active 
     public function registeredSlots(Request $request)
     {
-        $slots = Slot::status($request->status)->forDate($request->date)->get();
+        //startDate , endDate
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
+
+
+        $slots = Slot::status($request->status)->whereBetween('slot_date', [$startDate, $endDate])->get();
+        
         $slots->load('enrollment.student', 'enrollment.course', 'enrollment.teacher');
 
         return response()->json([
             'slots' => $slots
         ]);
+
+
     }
+
+
 
     // missed + current slot (not active) +   upcoming
     public function unregisteredSlots(Request $request)
