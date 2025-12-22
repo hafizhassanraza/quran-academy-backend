@@ -97,21 +97,22 @@ class StudentController extends Controller
             'full_name'         => 'sometimes|string|max:255',
             'father_name'       => 'sometimes|string|max:255',
             'gender'            => 'sometimes|in:male,female,other',
-            'age'               => 'sometimes|integer|min:1|max:120',
-            'email'             => 'sometimes|string|max:255|unique:students,email,' . $id,
+            'age'               => 'sometimes|integer|min:0|max:120',
+            'email'             => 'sometimes|string|max:50',
             'phone'             => 'sometimes|string|max:20',
-            'alternate_phone'   => 'sometimes|nullable|string|max:20',
+            'alternate_phone'   => 'sometimes|string|max:20',
             'address'           => 'sometimes|string|max:255',
             'city'              => 'sometimes|string|max:100',
             'country'           => 'sometimes|string|max:100',
             'enrollment_date'   => 'sometimes|date',
-            'temp_slots'        => 'sometimes|array|min:1',
-            'temp_slots.*'      => 'sometimes|string',
+            //'temp_slots'        => 'sometimes|array|min:1',
+            //'temp_slots.*'      => 'sometimes|string',
             'password'          => 'sometimes|string|min:6|max:255',
             'national_id'       => 'sometimes|nullable|string|max:50',
             'time_zone'         => 'sometimes|nullable|string|max:100',
             'other'             => 'sometimes|nullable|string|max:255',
-            'status'            => 'sometimes|in:active,inactive,dropped',
+            'status'            => 'sometimes|in:active,inactive,trail,completed,dropped',
+
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -135,8 +136,14 @@ class StudentController extends Controller
         // Apply update
         $student->update($data);
 
+        // update enrollment status | same as student status
+        //if enrollment exists
+        if ($student->enrollments()->exists()) {
+            $student->enrollments()->update(['status' => $student->status]);
+        }
+
         return response()->json([
-            'message' => 'Student updated successfully (partial)',
+            'message' => 'Student updated successfully ',
             'student' => $student->fresh()
         ]);
     }
@@ -195,22 +202,23 @@ class StudentController extends Controller
             'full_name'         => 'required|string|max:255',
             'father_name'       => 'required|string|max:255',
             'gender'            => 'required|in:male,female,other',
-            'age'               => 'required|integer|min:1|max:120',
-            'email'             => 'required|unique:students,email|string|max:255',
-            'phone'             => 'required|string|max:20',
+            'age'               => 'nullable|integer|min:0|max:120',
+            'email'             => 'nullable|string|max:50',
+            'phone'             => 'nullable|string|max:20',
             'alternate_phone'   => 'nullable|string|max:20',
-            'address'           => 'required|string|max:255',
+            'address'           => 'nullable|string|max:255',
             'city'              => 'required|string|max:100',
             'country'           => 'required|string|max:100',
             'enrollment_date'   => 'required|date',
-            'temp_slots'        => 'required|array|min:1',
-            'temp_slots.*'      => 'required|string',
+            // 'temp_slots'        => 'required|array|min:1',
+            // 'temp_slots.*'      => 'required|string',
             //'username'          => 'required|string|max:50|unique:students,username',
             'password'          => 'required|string|min:4|max:255',
             'national_id'       => 'nullable|string|max:50',
             'time_zone'         => 'nullable|string|max:100',
             'other'             => 'nullable|string|max:255',
-            'status'            => 'nullable|in:active,inactive,dropped',
+            'status'            => 'nullable|in:active,inactive,trail,completed,dropped',
+
 
         ], [
             //'registration_no.required' => 'Registration number is required.',
@@ -218,11 +226,7 @@ class StudentController extends Controller
             'full_name.required' => 'Full name is required.',
             'father_name.required' => 'Father name is required.',
             'gender.required' => 'Gender is required.',
-            'age.required' => 'Age is required.',
-            'email.required' => 'Email is required.',
-            'email.unique' => 'Email must be unique.',
-            'phone.required' => 'Phone is required.',
-            'address.required' => 'Address is required.',
+            
             'city.required' => 'City is required.',
             'country.required' => 'Country is required.',
             'enrollment_date.required' => 'Enrollment date is required.',
@@ -230,11 +234,11 @@ class StudentController extends Controller
             //'username.unique' => 'Username must be unique.',
             'password.required' => 'Password is required.',
 
-            'temp_slots.required' => 'At least one slot is required.',
-            'temp_slots.array' => 'The slots must be an array.',
-            'temp_slots.min' => 'At least one slot is required.',
-            'temp_slots.*.required' => 'Each slot is required.',
-            'temp_slots.*.string' => 'Each slot must be a string.',
+            // 'temp_slots.required' => 'At least one slot is required.',
+            // 'temp_slots.array' => 'The slots must be an array.',
+            // 'temp_slots.min' => 'At least one slot is required.',
+            // 'temp_slots.*.required' => 'Each slot is required.',
+            // 'temp_slots.*.string' => 'Each slot must be a string.',
         ]);
     }
 

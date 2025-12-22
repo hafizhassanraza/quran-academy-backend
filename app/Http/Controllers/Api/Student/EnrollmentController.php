@@ -70,6 +70,8 @@ class EnrollmentController extends Controller
         $enrollment = Enrollment::findOrFail($id);
         $enrollment->update($request->all());
 
+        
+
         return response()->json([
             'message' => 'Enrollment updated successfully',
             'enrollment' => $enrollment
@@ -130,7 +132,7 @@ class EnrollmentController extends Controller
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:teachers,id',
-            'status' => 'required|string|in:active,trail,completed,dropped',
+            //'status' => 'required|string|in:active,trail,completed,dropped',
             'enrollment_date' => 'required|date',
             'starting_date' => 'required|date',
             'slots' => 'required|array|min:1',
@@ -143,6 +145,7 @@ class EnrollmentController extends Controller
             // For update, ensure the combination of student_id and course_id is unique except for the current record
             $rules['student_id'] .= '|unique:enrollments,student_id,' . $id . ',id,course_id,' . $request->course_id;
             $rules['course_id'] .= '|unique:enrollments,course_id,' . $id . ',id,student_id,' . $request->student_id;
+            
         } else {
             // For create, ensure the combination of student_id and course_id is unique
             $rules['student_id'] .= '|unique:enrollments,student_id,NULL,id,course_id,' . $request->course_id;
@@ -153,6 +156,7 @@ class EnrollmentController extends Controller
             'student_id.required' => 'The student ID is required.',
             'student_id.exists' => 'The selected student does not exist.',
             'student_id.unique' => 'The student is already enrolled in this course.',
+
             'course_id.required' => 'The course ID is required.',
             'course_id.exists' => 'The selected course does not exist.',
             'course_id.unique' => 'The course already has this student enrolled.',
