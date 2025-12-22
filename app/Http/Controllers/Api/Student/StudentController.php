@@ -52,7 +52,32 @@ class StudentController extends Controller
     {
         
         $student = Student::findOrFail($id);
+
+
+
+        // If status is changing, handle it
+        if ($request->has('status') && $request->input('status') !== $student->status) {
+            $oldStatus = $student->status;
+            $newStatus = $request->input('status');
+
+            if ($student->enrollments()->exists()) {
+                $student->load('enrollments');
+                foreach ($student->enrollments as $enrollment) {
+                    $enrollment->status = $newStatus;
+                    $enrollment->save();
+                }
+            }
+
+            
+        }
+
         $student->update($request->all());
+        // Return the updated student
+        $student->fresh();
+
+
+
+
 
         return response()->json([
             'message' => 'Student updated successfully',
@@ -181,7 +206,7 @@ class StudentController extends Controller
             'temp_slots'        => 'required|array|min:1',
             'temp_slots.*'      => 'required|string',
             //'username'          => 'required|string|max:50|unique:students,username',
-            'password'          => 'required|string|min:6|max:255',
+            'password'          => 'required|string|min:4|max:255',
             'national_id'       => 'nullable|string|max:50',
             'time_zone'         => 'nullable|string|max:100',
             'other'             => 'nullable|string|max:255',
