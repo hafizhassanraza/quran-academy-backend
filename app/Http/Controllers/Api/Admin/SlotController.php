@@ -113,9 +113,13 @@ class SlotController extends Controller
     // missed + current slot (not active) +   upcoming
     public function unregisteredSlots(Request $request)
     {
-        $enrollments = Enrollment::with(['student', 'course'])->get();
+        $enrollments = Enrollment::with(['student', 'course', 'teacher'])->get();
 
         $todayRegisteredSlots = Slot::forDate($request->date)->get();
+        //want to show todayRegisteredSlots in console
+        //Log::info('Today Registered Slots:', $todayRegisteredSlots->toArray());
+        //DD($todayRegisteredSlots->toArray());
+
         $slotDay = $request->slot_day;
         $todayNotRegisteredSlots = [];
         foreach ($enrollments as $enrollment) {
@@ -136,6 +140,7 @@ class SlotController extends Controller
                         'other' => 'No record found, assumed not active',
                         'student' => $enrollment->student,
                         'course' => $enrollment->course,
+                        'teacher' => $enrollment->teacher,
                     ];
                 }
             }
@@ -211,7 +216,7 @@ class SlotController extends Controller
         $date = $request->date; // 'Y-m-d'
 
 
-        $slots = [];
+        $slots = collect();
 
         foreach ($enrollments as $enrollment) {
             foreach (($enrollment->slots ?? []) as $slotCode) // enrollments contain array of slot codes
@@ -231,17 +236,21 @@ class SlotController extends Controller
                     if($regularSlot ) {
                         $regularSlot->type = 'regular';
                         $regularSlot->student = $enrollment->student;
-                        $regularSlot->course = $enrollment->course;
-                        $slots[] = $regularSlot->toArray();
+                        $regularSlot->course = $enrollment->course;                        
+                        //$slots[] = $regularSlot->toArray();
+                        //$slots = array_merge($slots, $regularSlot->toArray());
+                        $slots->push($regularSlot);
+
                     }
                     elseif($rescheduledSlots) {
                         $rescheduledSlots->type = 'rescheduled';
                         $rescheduledSlots->student = $enrollment->student;
                         $rescheduledSlots->course = $enrollment->course;
-                        $slots[] = $rescheduledSlots->toArray();
+                        //$slots[] = $rescheduledSlots->toArray();
+                        $slots->push($rescheduledSlots);
                     } 
                     else {
-                        $slots[] = [
+                        $slots->push( [
                             'enrollment_id' => $enrollment->id,
                             'chapter_id' => null,
                             'slot_code' => $slotCode,
@@ -256,7 +265,7 @@ class SlotController extends Controller
                             'other' => null,
                             'student' => $enrollment->student,
                             'course' => $enrollment->course,
-                        ];
+                        ]);
                     }
                     
 
