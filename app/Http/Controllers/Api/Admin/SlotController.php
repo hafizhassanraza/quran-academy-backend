@@ -117,7 +117,7 @@ class SlotController extends Controller
 
         $todayRegisteredSlots = Slot::forDate($request->date)->get();
         //want to show todayRegisteredSlots in console
-        //Log::info('Today Registered Slots:', $todayRegisteredSlots->toArray());
+        Log::info('Today Registered Slots:', $todayRegisteredSlots->toArray());
         //DD($todayRegisteredSlots->toArray());
 
         $slotDay = $request->slot_day;
